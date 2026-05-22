@@ -419,28 +419,27 @@ export default function App() {
 
     const finalSlideCount = slideCountMode === "custom" ? parseInt(customSlideCount, 10) || 12 : parseInt(slideCountMode, 10);
 
-    try {
-  // Thay vì gọi /api/..., ta gọi trực tiếp Google AI
+   try {
+  // Thay vì gọi local api, ta gọi thẳng Google Gemini API
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [{
         parts: [{
-          text: `Hãy tạo cấu trúc slide cho chủ đề: ${customPrompt}. 
-                 Ngôn ngữ: Tiếng Việt. 
-                 Số slide: ${finalSlideCount}. 
-                 Phong cách: ${presentationStyle}.`
+          text: `Hãy tạo cấu trúc slide cho chủ đề: ${customPrompt}. Phong cách: ${presentationStyle}.`
         }]
       }]
     })
   });
 
   const data = await response.json();
-  const slideContent = JSON.parse(data.candidates[0].content.parts[0].text);
+  // Lấy text trả về từ Gemini
+  const text = data.candidates[0].content.parts[0].text;
+  // Parse dữ liệu thành JSON để ứng dụng sử dụng
+  const slideContent = JSON.parse(text.replace(/```json/g, "").replace(/```/g, ""));
   
-  // Sau đó bạn tiếp tục dùng biến slideContent để xử lý hiển thị slide
-  // ...
+  // Tiếp tục logic xử lý slideContent của bạn ở đây...
 
       clearInterval(textInterval);
 
