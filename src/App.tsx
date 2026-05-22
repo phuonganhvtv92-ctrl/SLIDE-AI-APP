@@ -420,24 +420,27 @@ export default function App() {
     const finalSlideCount = slideCountMode === "custom" ? parseInt(customSlideCount, 10) || 12 : parseInt(slideCountMode, 10);
 
     try {
-      const res = await fetch("/api/generate-slides", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          fileBase64: file?.base64 || null,
-          fileName: file?.name || null,
-          mimeType: file?.mimeType || null,
-          customPrompt: customPrompt,
-          language: "vi",
-          slideCount: finalSlideCount,
-          presentationStyle: presentationStyle,
-          themeId: selectedTheme.id,
-          themeName: selectedTheme.name,
-          imageOption: selectedImageOption
-        })
-      });
+  // Thay vì gọi /api/..., ta gọi trực tiếp Google AI
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: `Hãy tạo cấu trúc slide cho chủ đề: ${customPrompt}. 
+                 Ngôn ngữ: Tiếng Việt. 
+                 Số slide: ${finalSlideCount}. 
+                 Phong cách: ${presentationStyle}.`
+        }]
+      }]
+    })
+  });
+
+  const data = await response.json();
+  const slideContent = JSON.parse(data.candidates[0].content.parts[0].text);
+  
+  // Sau đó bạn tiếp tục dùng biến slideContent để xử lý hiển thị slide
+  // ...
 
       clearInterval(textInterval);
 
