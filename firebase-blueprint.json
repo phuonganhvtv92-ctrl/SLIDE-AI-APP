@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "Presentation": {
+      "title": "Presentation",
+      "description": "Bản trình chiếu slide PowerPoint được AI khởi tạo và lưu trữ cho giáo viên.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID duy nhất của bản trình chiếu."
+        },
+        "userId": {
+          "type": "string",
+          "description": "ID của người dùng sở hữu (giảng viên)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Tiêu đề chính của bài thuyết trình."
+        },
+        "themePreset": {
+          "type": "string",
+          "description": "Tên theme màu sắc và phong cách thiết kế."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Thời gian tạo bản slide."
+        },
+        "slidesJson": {
+          "type": "string",
+          "description": "Chuỗi JSON chứa danh sách slide chi tiết để lưu và chỉnh sửa."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "title",
+        "themePreset",
+        "createdAt",
+        "slidesJson"
+      ]
+    }
+  },
+  "firestore": {
+    "presentations/{presentationId}": {
+      "schema": "Presentation",
+      "description": "Bộ sưu tập các bài thuyết trình được lưu trữ theo ID của từng bài."
+    }
+  }
+}

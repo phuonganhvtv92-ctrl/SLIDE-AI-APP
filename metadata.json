@@ -1,0 +1,8 @@
+{
+  "name": "Trình tạo Slide AI chuyên nghiệp",
+  "description": "Ứng dụng AI giúp giáo viên và giảng viên tự động tóm tắt tài liệu, chia bố cục và xuất slide PowerPoint (.pptx) chuẩn dạy học với phong cách Times New Roman 28pt chuyên nghiệp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

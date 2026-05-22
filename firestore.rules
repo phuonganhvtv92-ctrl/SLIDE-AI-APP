@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidPresentation(data) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'themePreset', 'createdAt', 'slidesJson'])
+        && data.keys().size() == 6
+        && data.id is string && data.id.size() <= 128
+        && data.userId is string && data.userId == request.auth.uid
+        && data.title is string && data.title.size() <= 256
+        && data.themePreset is string && data.themePreset.size() <= 100
+        && data.slidesJson is string && data.slidesJson.size() <= 500000;
+    }
+
+    match /presentations/{presentationId} {
+      allow get: if isSignedIn() && isOwner(existing().userId) && isValidId(presentationId);
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      
+      allow create: if isSignedIn() 
+        && isValidId(presentationId) 
+        && isValidPresentation(incoming())
+        && incoming().createdAt == request.time;
+        
+      allow update: if isSignedIn() 
+        && isValidId(presentationId) 
+        && isValidPresentation(incoming())
+        && incoming().createdAt == existing().createdAt
+        && isOwner(existing().userId)
+        && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'themePreset', 'slidesJson']);
+        
+      allow delete: if isSignedIn() && isOwner(existing().userId) && isValidId(presentationId);
+    }
+  }
+}
