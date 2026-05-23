@@ -458,7 +458,7 @@ export default function App() {
   setActiveSlideIndex(0);
 
  
-      alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
+      alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message)
     } finally {
       clearInterval(textInterval);
       setIsGenerating(false);
