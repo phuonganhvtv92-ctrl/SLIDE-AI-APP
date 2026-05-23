@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
+import { callGemini } from './geminiApi';
 import {
   Sparkles,
   Upload,
@@ -433,44 +434,29 @@ export default function App() {
   console.error("Lỗi khi tạo slide:", error);
   alert("Có lỗi xảy ra khi tạo slide, hãy kiểm tra lại kết nối hoặc API Key.");
 }
-  const data = await response.json();
-  // Lấy text trả về từ Gemini
-  const text = data.candidates[0].content.parts[0].text;
-  // Parse dữ liệu thành JSON để ứng dụng sử dụng
-  const slideContent = JSON.parse(text.replace(/```json/g, "").replace(/```/g, ""));
+ 
   
   // Tiếp tục logic xử lý slideContent của bạn ở đây...
 
       clearInterval(textInterval);
+// Chuyển đổi slideContent từ AI thành định dạng ứng dụng yêu cầu
+const generatedSlides: SlideData[] = slideContent.map((slide: any) => ({
+  ...slide,
+  title: normalizeVietnameseText(slide.title || ""),
+  content: Array.isArray(slide.content) ? slide.content.map((text: string) => normalizeVietnameseText(text || "")) : [],
+  visualAid: slide.visualAid ? {
+    ...slide.visualAid,
+    description: normalizeVietnameseText(slide.visualAid.description || ""),
+    header: slide.visualAid.header ? normalizeVietnameseText(slide.visualAid.header) : undefined,
+    statLabel: slide.visualAid.statLabel ? normalizeVietnameseText(slide.visualAid.statLabel) : undefined,
+  } : undefined
+}));
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Gặp sự cố giải thuật AI trên máy chủ.");
-      }
+setSlides(generatedSlides);
+setActiveSlideIndex(0);
+     
 
-      const responseData = await res.json();
       
-      if (!responseData.slides || responseData.slides.length === 0) {
-        throw new Error("Mô hình AI trả về cấu trúc rỗng. Vui lòng bấm thử lại.");
-      }
-
-      const generatedSlides: SlideData[] = responseData.slides.map((slide: any) => ({
-        ...slide,
-        title: normalizeVietnameseText(slide.title || ""),
-        content: Array.isArray(slide.content) ? slide.content.map((text: string) => normalizeVietnameseText(text || "")) : [],
-        visualAid: slide.visualAid ? {
-          ...slide.visualAid,
-          description: normalizeVietnameseText(slide.visualAid.description || ""),
-          header: slide.visualAid.header ? normalizeVietnameseText(slide.visualAid.header) : undefined,
-          statLabel: slide.visualAid.statLabel ? normalizeVietnameseText(slide.visualAid.statLabel) : undefined,
-        } : undefined
-      }));
-      setSlides(generatedSlides);
-      setActiveSlideIndex(0);
-
-      // Thử tìm tiêu đề của slide đầu tiên làm tiêu đề chính của bài giảng
-      const docTitle = generatedSlides[0]?.title || "Bài giảng tóm tắt bài học";
-      setPresentationTitle(docTitle);
 
       // Tự động ghi lại lịch sử bản thuyết trình mới sinh ra
       const newId = "deck_" + Date.now();
