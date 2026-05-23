@@ -440,30 +440,35 @@ export default function App() {
 
       clearInterval(textInterval);
 // Chuyển đổi slideContent từ AI thành định dạng ứng dụng yêu cầu
-const generatedSlides: SlideData[] = slideContent.map((slide: any) => ({
-  ...slide,
-  title: normalizeVietnameseText(slide.title || ""),
-  content: Array.isArray(slide.content) ? slide.content.map((text: string) => normalizeVietnameseText(text || "")) : [],
-  visualAid: slide.visualAid ? {
-    ...slide.visualAid,
-    description: normalizeVietnameseText(slide.visualAid.description || ""),
-    header: slide.visualAid.header ? normalizeVietnameseText(slide.visualAid.header) : undefined,
-    statLabel: slide.visualAid.statLabel ? normalizeVietnameseText(slide.visualAid.statLabel) : undefined,
-  } : undefined
-}));
+// 1. Chuyển đổi dữ liệu từ AI sang cấu trúc SlideData
+  const generatedSlides: SlideData[] = slideContent.map((slide: any) => ({
+    ...slide,
+    title: normalizeVietnameseText(slide.title || ""),
+    content: Array.isArray(slide.content) ? slide.content.map((text: string) => normalizeVietnameseText(text || "")) : [],
+    visualAid: slide.visualAid ? {
+      ...slide.visualAid,
+      description: normalizeVietnameseText(slide.visualAid.description || ""),
+      header: slide.visualAid.header ? normalizeVietnameseText(slide.visualAid.header) : undefined,
+      statLabel: slide.visualAid.statLabel ? normalizeVietnameseText(slide.visualAid.statLabel) : undefined,
+    } : undefined
+  }));
 
-setSlides(generatedSlides);
-setActiveSlideIndex(0);
-     
+  // 2. Cập nhật vào ứng dụng
+  setSlides(generatedSlides);
+  setActiveSlideIndex(0);
 
-      
-
-      // Tự động ghi lại lịch sử bản thuyết trình mới sinh ra
-      const newId = "deck_" + Date.now();
-      const newRecord = {
-        id: newId,
-        userId: userId,
-        title: docTitle,
+  // 3. Tự động ghi lại lịch sử bản thuyết trình mới
+  const docTitle = generatedSlides[0]?.title || "Bài giảng tóm tắt bài học";
+  setPresentationTitle(docTitle);
+  const newId = "deck_" + Date.now();
+  const newRecord = {
+    id: newId,
+    userId: userId,
+    title: docTitle,
+    themePreset: selectedTheme.id,
+    createdAt: new Date().toISOString(),
+    slidesJson: JSON.stringify(generatedSlides)
+  };
         themePreset: selectedTheme.id,
         createdAt: new Date().toISOString(),
         slidesJson: JSON.stringify(generatedSlides)
