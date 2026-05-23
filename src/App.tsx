@@ -464,11 +464,26 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
     const path = "presentations";
     try {
-      await setDoc(doc(db, path, presentationId), updatedRecord, { merge: true });
-    } catch (fErr) {
-      handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${presentationId}`);
+     if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
+  const path = "presentations";
+  try {
+    // Lấy ID từ bản ghi hiện tại
+    const docId = matchedRecord?.id || matchedRecord?.docId;
+    await setDoc(doc(db, path, docId), updatedRecord, { merge: true });
+  } catch (fErr) {
+    handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${docId}`);
+  }
+} else {
+  // Logic cập nhật LocalStorage của bạn ở đây
+  const updatedLocal = historyList.map(item => {
+    if (item.id === matchedRecord?.id) {
+      return { ...item, ...updatedRecord };
     }
-  } else {
+    return item;
+  });
+  localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
+  setHistoryList(updatedLocal);
+}
     const updatedLocal = historyList.map(item => {
       if (item.id === presentationId) {
         return { ...item, ...updatedRecord };
