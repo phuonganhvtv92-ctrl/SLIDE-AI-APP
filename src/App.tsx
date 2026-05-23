@@ -451,23 +451,23 @@ export default function App() {
   }
 
   // --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
-  const handleUpdateActiveSlide = (updatedSlide: SlideData) => {
+ const handleUpdateActiveSlide = (updatedSlide: SlideData) => {
     const updatedDecks = [...slides];
-   // 2. Cập nhật vào ứng dụng
-  setSlides(generatedSlides);
-  setActiveSlideIndex(0);
-} catch (err: any) {
-  console.error("Lỗi:", err);
-  alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
-} finally {
-  clearInterval(textInterval);
-  setIsGenerating(false);
-  setStatusMessage("");
-}
-        themePreset: selectedTheme.id,
-        createdAt: matchedRecord.createdAt || new Date().toISOString(),
-        slidesJson: JSON.stringify(updatedDecks)
-      };
+    updatedDecks[activeSlideIndex] = updatedSlide;
+    setSlides(updatedDecks);
+
+    // Lưu lại trạng thái cập nhật vào CSDL/LocalStorage
+    const updatedRecord = {
+      ...matchedRecord,
+      slidesJson: JSON.stringify(updatedDecks),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Tiếp tục logic Firebase/LocalStorage ở đây...
+    if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
+       // ... code setDoc của bạn
+    }
+  };
 
       if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
         const path = "presentations";
