@@ -449,7 +449,6 @@ export default function App() {
 }; 
 
 // --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
-// --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
 const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   const updatedDecks = [...slides];
   updatedDecks[activeSlideIndex] = updatedSlide;
@@ -472,7 +471,6 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   } else {
     const updatedLocal = historyList.map(item => {
       if (item.id === presentationId) {
-        // ĐÃ SỬA: Đóng ngoặc nhọn cho đối tượng trả về
         return { ...item, ...updatedRecord };
       }
       return item;
@@ -481,6 +479,10 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
     setHistoryList(updatedLocal);
   }
 };
+
+// --- THÊM SLIDE MỚI / XOÁ SLIDE ---
+const handleAddNewSlide = () => {
+  const newSlide: SlideData = {
     title: "Slide mới khởi tạo",
     content: ["Bấm nút chỉnh sửa để sửa đổi từng dòng gạch đầu dòng.", "Thêm nội dung súc tích nhất ở đây."],
     layout: "points",
@@ -490,13 +492,13 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
       description: "Hình họa gợi ý về trình chiếu và sư phạm."
     }
   };
-    const updated = [...slides];
-    // Chèn vào ngay sau vị trí hiện tại
-    updated.splice(activeSlideIndex + 1, 0, newSlide);
-    setSlides(updated);
-    setActiveSlideIndex(activeSlideIndex + 1);
-  };
 
+  const updated = [...slides];
+  // Chèn vào ngay sau vị trí hiện tại
+  updated.splice(activeSlideIndex + 1, 0, newSlide);
+  setSlides(updated);
+  setActiveSlideIndex(activeSlideIndex + 1);
+};
   const deleteSlideFromDB = async (idxToDelete: number) => {
     const updated = slides.filter((_, idx) => idx !== idxToDelete);
     const matchedRecord = historyList[0]; // Cập nhật bản ghi hiện tại
