@@ -454,26 +454,23 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   updatedDecks[activeSlideIndex] = updatedSlide;
   setSlides(updatedDecks);
 
-  // Lưu lại trạng thái cập nhật vào CSDL/LocalStorage
-  // ... (giữ nguyên phần trên)
+  const docId = matchedRecord?.id || matchedRecord?.docId;
   const updatedRecord = {
     ...matchedRecord,
     slidesJson: JSON.stringify(updatedDecks),
     updatedAt: new Date().toISOString()
   };
 
-  // SỬA ĐOẠN NÀY:
-  if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
+  if (isFirebaseConfigured && db && userId !== "anonymous_lecturer" && docId) {
     const path = "presentations";
     try {
-      await setDoc(doc(db, path, presentationId), updatedRecord, { merge: true });
+      await setDoc(doc(db, path, docId), updatedRecord, { merge: true });
     } catch (fErr) {
-      handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${presentationId}`);
+      handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${docId}`);
     }
   } else {
-    // Logic LocalStorage...
     const updatedLocal = historyList.map(item => {
-      if (item.id === presentationId) {
+      if (item.id === docId) {
         return { ...item, ...updatedRecord };
       }
       return item;
@@ -481,7 +478,7 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
     localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
     setHistoryList(updatedLocal);
   }
-}; // Đóng hàm handleUpdateActiveSlide tại đây
+};
     const path = "presentations";
     try {
      if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
