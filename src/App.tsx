@@ -448,7 +448,7 @@ export default function App() {
   }
 }; 
 
-// --- HÀM CẬP NHẬT SLIDE (Bản sửa lỗi triệt để) ---
+// --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
 const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   const updatedDecks = [...slides];
   updatedDecks[activeSlideIndex] = updatedSlide;
@@ -461,17 +461,14 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
     updatedAt: new Date().toISOString()
   };
 
-  // Logic Firestore
   if (isFirebaseConfigured && db && userId !== "anonymous_lecturer" && docId) {
     const path = "presentations";
     try {
-      // Bây giờ await nằm trong hàm handleUpdateActiveSlide đã có async, sẽ KHÔNG CÒN LỖI
       await setDoc(doc(db, path, docId), updatedRecord, { merge: true });
     } catch (fErr) {
       handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${docId}`);
     }
   } else {
-    // Logic LocalStorage
     const updatedLocal = historyList.map(item => {
       if (item.id === docId) {
         return { ...item, ...updatedRecord };
@@ -481,7 +478,26 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
     localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
     setHistoryList(updatedLocal);
   }
-}; // Kết thúc hàm tại đây
+}; // Đảm bảo hàm này đóng tại đây
+
+// --- THÊM SLIDE MỚI / XOÁ SLIDE ---
+const handleAddNewSlide = () => {
+  const newSlide: SlideData = {
+    title: "Slide mới khởi tạo",
+    content: ["Bấm nút chỉnh sửa để sửa đổi từng dòng gạch đầu dòng.", "Thêm nội dung súc tích nhất ở đây."],
+    layout: "points",
+    visualAid: {
+      type: "icon",
+      icon: "Presentation",
+      description: "Hình họa gợi ý về trình chiếu và sư phạm."
+    }
+  };
+
+  const updated = [...slides];
+  updated.splice(activeSlideIndex + 1, 0, newSlide);
+  setSlides(updated);
+  setActiveSlideIndex(activeSlideIndex + 1);
+}; // Đảm bảo hàm này đóng tại đây
     const path = "presentations";
     try {
      if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
