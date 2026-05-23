@@ -457,14 +457,13 @@ export default function App() {
   setSlides(generatedSlides);
   setActiveSlideIndex(0);
 
- 
-      alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message)
-    } finally 
-      clearInterval(textInterval);
-      setIsGenerating(false);
-      setStatusMessage("");
-    }
-  };
+ } catch (err: any) {
+    alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
+  } finally {
+    clearInterval(textInterval);
+    setIsGenerating(false);
+    setStatusMessage("");
+  }
 
   // --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
   const handleUpdateActiveSlide = (updatedSlide: SlideData) => {
