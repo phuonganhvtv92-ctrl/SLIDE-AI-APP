@@ -455,13 +455,33 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   setSlides(updatedDecks);
 
   // Lưu lại trạng thái cập nhật vào CSDL/LocalStorage
+  // ... (giữ nguyên phần trên)
   const updatedRecord = {
     ...matchedRecord,
     slidesJson: JSON.stringify(updatedDecks),
     updatedAt: new Date().toISOString()
   };
 
+  // SỬA ĐOẠN NÀY:
   if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
+    const path = "presentations";
+    try {
+      await setDoc(doc(db, path, presentationId), updatedRecord, { merge: true });
+    } catch (fErr) {
+      handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${presentationId}`);
+    }
+  } else {
+    // Logic LocalStorage...
+    const updatedLocal = historyList.map(item => {
+      if (item.id === presentationId) {
+        return { ...item, ...updatedRecord };
+      }
+      return item;
+    });
+    localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
+    setHistoryList(updatedLocal);
+  }
+}; // Đóng hàm handleUpdateActiveSlide tại đây
     const path = "presentations";
     try {
      if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
