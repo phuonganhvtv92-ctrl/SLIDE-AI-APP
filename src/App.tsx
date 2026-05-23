@@ -457,11 +457,14 @@ export default function App() {
   setSlides(generatedSlides);
   setActiveSlideIndex(0);
 
- } catch (err: any) {
+} catch (err: any) {
+    console.error(err);
     alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
   } finally {
     clearInterval(textInterval);
     setIsGenerating(false);
+    setStatusMessage("");
+  }
     setStatusMessage("");
   }
 
