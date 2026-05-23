@@ -453,17 +453,17 @@ export default function App() {
   // --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
   const handleUpdateActiveSlide = (updatedSlide: SlideData) => {
     const updatedDecks = [...slides];
-    updatedDecks[activeSlideIndex] = updatedSlide;
-    setSlides(updatedDecks);
-
-    // Lưu lại trạng thái chỉnh sửa tức thì vào Cơ sở dữ liệu và Lịch sử
-    const matchedRecord = historyList[0]; // Cập nhật bản ghi hiện tại
-    if (matchedRecord) {
-      const presentationId = matchedRecord.id || matchedRecord.docId;
-      const updatedRecord = {
-        id: presentationId,
-        userId: userId,
-        title: presentationTitle,
+   // 2. Cập nhật vào ứng dụng
+  setSlides(generatedSlides);
+  setActiveSlideIndex(0);
+} catch (err: any) {
+  console.error("Lỗi:", err);
+  alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
+} finally {
+  clearInterval(textInterval);
+  setIsGenerating(false);
+  setStatusMessage("");
+}
         themePreset: selectedTheme.id,
         createdAt: matchedRecord.createdAt || new Date().toISOString(),
         slidesJson: JSON.stringify(updatedDecks)
