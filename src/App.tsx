@@ -420,19 +420,19 @@ export default function App() {
     const finalSlideCount = slideCountMode === "custom" ? parseInt(customSlideCount, 10) || 12 : parseInt(slideCountMode, 10);
 
    try {
-  // Thay vì gọi local api, ta gọi thẳng Google Gemini API
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{
-          text: `Hãy tạo cấu trúc slide cho chủ đề: ${customPrompt}. Phong cách: ${presentationStyle}.`
-        }]
-      }]
-    })
-  });
+  // Gọi hàm callGemini từ file geminiApi.ts đã tạo
+  const resultText = await callGemini(`Hãy tạo nội dung slide cho chủ đề: ${customPrompt}. Phong cách: ${presentationStyle}.`);
 
+  // Xử lý để lấy ra dữ liệu JSON thuần túy
+  const cleanJson = resultText.replace(/```json/g, "").replace(/```/g, "");
+  const slideContent = JSON.parse(cleanJson);
+
+  // Cập nhật kết quả vào ứng dụng
+  setSlides(slideContent);
+} catch (error) {
+  console.error("Lỗi khi tạo slide:", error);
+  alert("Có lỗi xảy ra khi tạo slide, hãy kiểm tra lại kết nối hoặc API Key.");
+}
   const data = await response.json();
   // Lấy text trả về từ Gemini
   const text = data.candidates[0].content.parts[0].text;
