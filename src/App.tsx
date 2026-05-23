@@ -495,7 +495,7 @@ export default function App() {
       } else {
         const updatedLocal = historyList.map(item => {
           if (item.id === presentationId) {
-            return { ...item, ...updatedRecord };
+            return { ...item, ...updatedRecord;
           }
           return item;
         });
