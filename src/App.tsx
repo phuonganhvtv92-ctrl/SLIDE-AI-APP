@@ -421,49 +421,31 @@ export default function App() {
     const finalSlideCount = slideCountMode === "custom" ? parseInt(customSlideCount, 10) || 12 : parseInt(slideCountMode, 10);
 
    try {
-  // Gọi hàm callGemini từ file geminiApi.ts đã tạo
-  const resultText = await callGemini(`Hãy tạo nội dung slide cho chủ đề: ${customPrompt}. Phong cách: ${presentationStyle}.`);
+    // 1. Chuyển đổi dữ liệu từ AI
+    const generatedSlides: SlideData[] = slideContent.map((slide: any) => ({
+      ...slide,
+      title: normalizeVietnameseText(slide.title || ""),
+      content: Array.isArray(slide.content) ? slide.content.map((text: string) => normalizeVietnameseText(text || "")) : [],
+      visualAid: slide.visualAid ? {
+        ...slide.visualAid,
+        description: normalizeVietnameseText(slide.visualAid.description || ""),
+        header: slide.visualAid.header ? normalizeVietnameseText(slide.visualAid.header) : undefined,
+        statLabel: slide.visualAid.statLabel ? normalizeVietnameseText(slide.visualAid.statLabel) : undefined,
+      } : undefined
+    }));
 
-  // Xử lý để lấy ra dữ liệu JSON thuần túy
-  const cleanJson = resultText.replace(/```json/g, "").replace(/```/g, "");
-  const slideContent = JSON.parse(cleanJson);
-
-  // Cập nhật kết quả vào ứng dụng
-  setSlides(slideContent);
-} catch (error) {
-  console.error("Lỗi khi tạo slide:", error);
-  alert("Có lỗi xảy ra khi tạo slide, hãy kiểm tra lại kết nối hoặc API Key.");
-}
- 
-  
-  // Tiếp tục logic xử lý slideContent của bạn ở đây...
-
-      clearInterval(textInterval);
-// Chuyển đổi slideContent từ AI thành định dạng ứng dụng yêu cầu
-// 1. Chuyển đổi dữ liệu từ AI sang cấu trúc SlideData
-  const generatedSlides: SlideData[] = slideContent.map((slide: any) => ({
-    ...slide,
-    title: normalizeVietnameseText(slide.title || ""),
-    content: Array.isArray(slide.content) ? slide.content.map((text: string) => normalizeVietnameseText(text || "")) : [],
-    visualAid: slide.visualAid ? {
-      ...slide.visualAid,
-      description: normalizeVietnameseText(slide.visualAid.description || ""),
-      header: slide.visualAid.header ? normalizeVietnameseText(slide.visualAid.header) : undefined,
-      statLabel: slide.visualAid.statLabel ? normalizeVietnameseText(slide.visualAid.statLabel) : undefined,
-    } : undefined
-  }));
-
- // 2. Cập nhật vào ứng dụng
-  setSlides(generatedSlides);
-  setActiveSlideIndex(0);
-} catch (err: any) {
-  console.error(err);
-  alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
-} finally {
-  clearInterval(textInterval);
-  setIsGenerating(false);
-  setStatusMessage("");
-}
+    // 2. Cập nhật vào ứng dụng
+    setSlides(generatedSlides);
+    setActiveSlideIndex(0);
+    
+  } catch (err: any) {
+    console.error("Lỗi khi tạo slide:", err);
+    alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
+  } finally {
+    clearInterval(textInterval);
+    setIsGenerating(false);
+    setStatusMessage("");
+  }
   }
     setStatusMessage("");
   }
