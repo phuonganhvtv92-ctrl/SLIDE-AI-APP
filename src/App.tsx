@@ -459,7 +459,7 @@ export default function App() {
 
  
       alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message)
-    } finally {
+    } finally 
       clearInterval(textInterval);
       setIsGenerating(false);
       setStatusMessage("");
