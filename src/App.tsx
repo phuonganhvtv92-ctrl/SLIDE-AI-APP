@@ -448,7 +448,7 @@ export default function App() {
   }
 }; 
 
-// --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
+// --- HÀM CẬP NHẬT SLIDE (Bản sửa lỗi triệt để) ---
 const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   const updatedDecks = [...slides];
   updatedDecks[activeSlideIndex] = updatedSlide;
@@ -461,14 +461,17 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
     updatedAt: new Date().toISOString()
   };
 
+  // Logic Firestore
   if (isFirebaseConfigured && db && userId !== "anonymous_lecturer" && docId) {
     const path = "presentations";
     try {
+      // Bây giờ await nằm trong hàm handleUpdateActiveSlide đã có async, sẽ KHÔNG CÒN LỖI
       await setDoc(doc(db, path, docId), updatedRecord, { merge: true });
     } catch (fErr) {
       handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${docId}`);
     }
   } else {
+    // Logic LocalStorage
     const updatedLocal = historyList.map(item => {
       if (item.id === docId) {
         return { ...item, ...updatedRecord };
@@ -478,7 +481,7 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
     localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
     setHistoryList(updatedLocal);
   }
-};
+}; // Kết thúc hàm tại đây
     const path = "presentations";
     try {
      if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
