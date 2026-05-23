@@ -449,6 +449,7 @@ export default function App() {
 }; 
 
 // --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
+// --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
 const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   const updatedDecks = [...slides];
   updatedDecks[activeSlideIndex] = updatedSlide;
@@ -471,6 +472,7 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
   } else {
     const updatedLocal = historyList.map(item => {
       if (item.id === presentationId) {
+        // ĐÃ SỬA: Đóng ngoặc nhọn cho đối tượng trả về
         return { ...item, ...updatedRecord };
       }
       return item;
@@ -478,11 +480,7 @@ const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
     localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
     setHistoryList(updatedLocal);
   }
-}; 
-
-// --- THÊM SLIDE MỚI / XOÁ SLIDE ---
-const handleAddNewSlide = () => {
-  const newSlide: SlideData = {
+};
     title: "Slide mới khởi tạo",
     content: ["Bấm nút chỉnh sửa để sửa đổi từng dòng gạch đầu dòng.", "Thêm nội dung súc tích nhất ở đây."],
     layout: "points",
