@@ -467,14 +467,14 @@ export default function App() {
     title: docTitle,
     themePreset: selectedTheme.id,
     createdAt: new Date().toISOString(),
-    slidesJson: JSON.stringify(generatedSlides)
+    const newRecord = {
+    id: "deck_" + Date.now(),
+    userId: userId,
+    title: docTitle,
+    themePreset: selectedTheme.id,
+    createdAt: new Date().toISOString(),
+    slidesJson: JSON.stringify(slideContent)
   };
-        themePreset: selectedTheme.id,
-        createdAt: new Date().toISOString(),
-        slidesJson: JSON.stringify(generatedSlides)
-      };
-
-      if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
         const path = "presentations";
         try {
           await setDoc(doc(db, path, newId), newRecord);
