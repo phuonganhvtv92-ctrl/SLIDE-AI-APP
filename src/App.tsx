@@ -453,17 +453,17 @@ export default function App() {
     } : undefined
   }));
 
-  // 2. Cập nhật vào ứng dụng
+ // 2. Cập nhật vào ứng dụng
   setSlides(generatedSlides);
   setActiveSlideIndex(0);
-
 } catch (err: any) {
-    console.error(err);
-    alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
-  } finally {
-    clearInterval(textInterval);
-    setIsGenerating(false);
-    setStatusMessage("");
+  console.error(err);
+  alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
+} finally {
+  clearInterval(textInterval);
+  setIsGenerating(false);
+  setStatusMessage("");
+}
   }
     setStatusMessage("");
   }
