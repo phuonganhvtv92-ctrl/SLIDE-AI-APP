@@ -457,47 +457,7 @@ export default function App() {
   setSlides(generatedSlides);
   setActiveSlideIndex(0);
 
-  // 3. Tự động ghi lại lịch sử bản thuyết trình mới
-  const docTitle = generatedSlides[0]?.title || "Bài giảng tóm tắt bài học";
-  setPresentationTitle(docTitle);
-  const newId = "deck_" + Date.now();
-  const newRecord = {
-    id: newId,
-    userId: userId,
-    title: docTitle,
-    themePreset: selectedTheme.id,
-    createdAt: new Date().toISOString(),
-    const newRecord = {
-    id: "deck_" + Date.now(),
-    userId: userId,
-    title: docTitle,
-    themePreset: selectedTheme.id,
-    createdAt: new Date().toISOString(),
-    slidesJson: JSON.stringify(slideContent)
-  };
-        const path = "presentations";
-        try {
-          await setDoc(doc(db, path, newId), newRecord);
-          console.log("[FIREBASE] Đã đồng bộ slide mới lên máy chủ.");
-        } catch (fErr) {
-          handleFirestoreError(fErr, OperationType.CREATE, `${path}/${newId}`);
-        }
-      } else {
-        // Lưu trữ Local thô
-        const currentSaved = localStorage.getItem("ai_slides_history");
-        let list: any[] = [];
-        if (currentSaved) {
-          try {
-            list = JSON.parse(currentSaved);
-          } catch (_) {}
-        }
-        list.unshift(newRecord);
-        localStorage.setItem("ai_slides_history", JSON.stringify(list));
-        setHistoryList(list);
-      }
-
-    } catch (err: any) {
-      console.error(err);
+ 
       alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
     } finally {
       clearInterval(textInterval);
