@@ -446,9 +446,7 @@ export default function App() {
     setIsGenerating(false);
     setStatusMessage("");
   }
-  }
-    setStatusMessage("");
-  }
+}; // Dòng này đóng hàm handleGenerateSlides
 
   // --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
  const handleUpdateActiveSlide = (updatedSlide: SlideData) => {
@@ -464,30 +462,25 @@ export default function App() {
     };
 
     // Tiếp tục logic Firebase/LocalStorage ở đây...
+    // Bắt đầu thay thế từ dòng 465 đến 488
     if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
-       // ... code setDoc của bạn
-    }
-  };
-
-      if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
-        const path = "presentations";
-        try {
-          setDoc(doc(db, path, presentationId), updatedRecord, { merge: true });
-        } catch (fErr) {
-          handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${presentationId}`);
-        }
-      } else {
-        const updatedLocal = historyList.map(item => {
-          if (item.id === presentationId) {
-            return { ...item, ...updatedRecord;
-          }
-          return item;
-        });
-        localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
-        setHistoryList(updatedLocal);
+      const path = "presentations";
+      try {
+        await setDoc(doc(db, path, presentationId), updatedRecord, { merge: true });
+      } catch (fErr) {
+        handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${presentationId}`);
       }
+    } else {
+      const updatedLocal = historyList.map(item => {
+        if (item.id === presentationId) {
+          return { ...item, ...updatedRecord }; // Đã thêm dấu } bị thiếu ở dòng 480 cũ
+        }
+        return item;
+      });
+      localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
+      setHistoryList(updatedLocal);
     }
-  };
+  }; // Dòng này đóng hàm handleUpdateActiveSlide tại vị trí dòng 488
 
   // --- THÊM SLIDE MỚI / XOÁ SLIDE ---
   const handleAddNewSlide = () => {
