@@ -420,7 +420,8 @@ export default function App() {
 
     const finalSlideCount = slideCountMode === "custom" ? parseInt(customSlideCount, 10) || 12 : parseInt(slideCountMode, 10);
 
-   try {
+ // --- HÀM GỌI API GEMINI (Kết thúc tại đây) ---
+  try {
     // 1. Chuyển đổi dữ liệu từ AI
     const generatedSlides: SlideData[] = slideContent.map((slide: any) => ({
       ...slide,
@@ -437,7 +438,6 @@ export default function App() {
     // 2. Cập nhật vào ứng dụng
     setSlides(generatedSlides);
     setActiveSlideIndex(0);
-    
   } catch (err: any) {
     console.error("Lỗi khi tạo slide:", err);
     alert("Đã xảy ra lỗi trong quá trình phân tích: " + err.message);
@@ -446,54 +446,52 @@ export default function App() {
     setIsGenerating(false);
     setStatusMessage("");
   }
-}; // Dòng này đóng hàm handleGenerateSlides
+}; 
 
-  // --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
- const handleUpdateActiveSlide = (updatedSlide: SlideData) => {
-    const updatedDecks = [...slides];
-    updatedDecks[activeSlideIndex] = updatedSlide;
-    setSlides(updatedDecks);
+// --- TRÌNH CHỈNH SỬA / CẬP NHẬT SLIDE THỦ CÔNG ---
+const handleUpdateActiveSlide = async (updatedSlide: SlideData) => {
+  const updatedDecks = [...slides];
+  updatedDecks[activeSlideIndex] = updatedSlide;
+  setSlides(updatedDecks);
 
-    // Lưu lại trạng thái cập nhật vào CSDL/LocalStorage
-    const updatedRecord = {
-      ...matchedRecord,
-      slidesJson: JSON.stringify(updatedDecks),
-      updatedAt: new Date().toISOString()
-    };
+  // Lưu lại trạng thái cập nhật vào CSDL/LocalStorage
+  const updatedRecord = {
+    ...matchedRecord,
+    slidesJson: JSON.stringify(updatedDecks),
+    updatedAt: new Date().toISOString()
+  };
 
-    // Tiếp tục logic Firebase/LocalStorage ở đây...
-    // Bắt đầu thay thế từ dòng 465 đến 488
-    if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
-      const path = "presentations";
-      try {
-        await setDoc(doc(db, path, presentationId), updatedRecord, { merge: true });
-      } catch (fErr) {
-        handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${presentationId}`);
-      }
-    } else {
-      const updatedLocal = historyList.map(item => {
-        if (item.id === presentationId) {
-          return { ...item, ...updatedRecord }; // Đã thêm dấu } bị thiếu ở dòng 480 cũ
-        }
-        return item;
-      });
-      localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
-      setHistoryList(updatedLocal);
+  if (isFirebaseConfigured && db && userId !== "anonymous_lecturer") {
+    const path = "presentations";
+    try {
+      await setDoc(doc(db, path, presentationId), updatedRecord, { merge: true });
+    } catch (fErr) {
+      handleFirestoreError(fErr, OperationType.UPDATE, `${path}/${presentationId}`);
     }
-  }; // Dòng này đóng hàm handleUpdateActiveSlide tại vị trí dòng 488
-
-  // --- THÊM SLIDE MỚI / XOÁ SLIDE ---
-  const handleAddNewSlide = () => {
-    const newSlide: SlideData = {
-      title: "Slide mới khởi tạo",
-      content: ["Bấm nút chỉnh sửa để sửa đổi từng dòng gạch đầu dòng.", "Thêm nội dung súc tích nhất ở đây."],
-      layout: "points",
-      visualAid: {
-        type: "icon",
-        icon: "Presentation",
-        description: "Hình họa gợi ý về trình chiếu và sư phạm."
+  } else {
+    const updatedLocal = historyList.map(item => {
+      if (item.id === presentationId) {
+        return { ...item, ...updatedRecord };
       }
-    };
+      return item;
+    });
+    localStorage.setItem("ai_slides_history", JSON.stringify(updatedLocal));
+    setHistoryList(updatedLocal);
+  }
+}; 
+
+// --- THÊM SLIDE MỚI / XOÁ SLIDE ---
+const handleAddNewSlide = () => {
+  const newSlide: SlideData = {
+    title: "Slide mới khởi tạo",
+    content: ["Bấm nút chỉnh sửa để sửa đổi từng dòng gạch đầu dòng.", "Thêm nội dung súc tích nhất ở đây."],
+    layout: "points",
+    visualAid: {
+      type: "icon",
+      icon: "Presentation",
+      description: "Hình họa gợi ý về trình chiếu và sư phạm."
+    }
+  };
     const updated = [...slides];
     // Chèn vào ngay sau vị trí hiện tại
     updated.splice(activeSlideIndex + 1, 0, newSlide);
